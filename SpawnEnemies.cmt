@@ -3,3 +3,6 @@ Author=dotpy
 Message=This is a custom message!
 Links=https://raw.githubusercontent.com/HueSamai/SpawnEnemies/master/SpawnEnemies.dll
 LatestVersion=https://raw.githubusercontent.com/HueSamai/SpawnEnemies/master/version
+KeybindSpawnSmall=1
+KeybindSpawnMedium=2
+KeybindSpawnLarge=3
