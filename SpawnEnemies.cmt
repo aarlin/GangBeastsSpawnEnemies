@@ -1,8 +1,8 @@
 Name=SpawnEnemies
 Author=dotpy
-Message=This is a custom message!
+Message=Modified Spawn Enemies
 Links=https://raw.githubusercontent.com/HueSamai/SpawnEnemies/master/SpawnEnemies.dll
 LatestVersion=https://raw.githubusercontent.com/HueSamai/SpawnEnemies/master/version
-[Editable][Keybind] KeybindSpawnSmall=i
-[Editable][Keybind] KeybindSpawnMedium=o
-[Editable][Keybind] KeybindSpawnLarge=p
+[Editable][Keybind] KeybindSpawnSmall=JoystickButton14
+[Editable][Keybind] KeybindSpawnMedium=JoystickButton13
+[Editable][Keybind] KeybindSpawnLarge=JoystickButton15
