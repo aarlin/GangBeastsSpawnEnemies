@@ -15,5 +15,6 @@ https://github.com/HueSamai/SpawnEnemies
 
 ## References
 
-1. https://github.com/HueSamai/TutorialModsSolution/blob/master/TutorialSolution.sln  
-2. https://docs.unity3d.com/ScriptReference/KeyCode.html  
+1. https://github.com/HueSamai/CementSource/wiki/Setting-up-a-work-environment-for-creating-Cement-mods  
+2. https://github.com/HueSamai/TutorialModsSolution/blob/master/TutorialSolution.sln  
+3. https://docs.unity3d.com/ScriptReference/KeyCode.html  
