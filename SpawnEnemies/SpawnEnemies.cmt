@@ -1,8 +1,8 @@
 Name=SpawnEnemies
 Author=dotpy
 Message=Modified Spawn Enemies
-Links=https://raw.githubusercontent.com/HueSamai/SpawnEnemies/master/SpawnEnemies.dll
-LatestVersion=https://raw.githubusercontent.com/HueSamai/SpawnEnemies/master/version
+Links=https://raw.githubusercontent.com/aarlin/GangBeastsSpawnEnemies/master/SpawnEnemies.dll
+LatestVersion=https://raw.githubusercontent.com/aarlin/GangBeastsSpawnEnemies/master/version
 [Editable][Keybind] KeybindSpawnSmall=JoystickButton14
 [Editable][Keybind] KeybindSpawnMedium=JoystickButton13
 [Editable][Keybind] KeybindSpawnLarge=JoystickButton15
