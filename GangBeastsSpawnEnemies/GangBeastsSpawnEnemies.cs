@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CementTools;
+using CementTools.Modules.InputModule;
 using CoreNet.Model;
 using Costumes;
 using Femur;
@@ -12,87 +13,14 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using Resources = GB.Core.Resources;
-using InputDevice = UnityEngine.Input;
 
 namespace GangBeastsSpawnEnemies
 {
-    public class KeybindManager
-    {
-        private ModFile _file;
-        private Dictionary<string, KeybindData> _keybinds = new Dictionary<string, KeybindData>();
-        private Dictionary<string, bool> _pressedLastFrame = new Dictionary<string, bool>();
-
-        public KeybindManager(ModFile file)
-        {
-            this._file = file;
-        }
-
-        private bool WasPressedLastFrame(string p)
-        {
-            if (!this._pressedLastFrame.ContainsKey(p))
-            {
-                this._pressedLastFrame[p] = false;
-                return false;
-            }
-            return this._pressedLastFrame[p];
-        }
-
-        public void CheckInputs()
-        {
-            foreach (InputDevice inputDevice in InputSystem.devices)
-            {
-                foreach (string text in this._keybinds.Keys)
-                {
-                    InputControl inputControl = inputDevice.TryGetChildControl(text);
-                    if (inputControl != null && InputControlExtensions.IsPressed(inputControl, 0f))
-                    {
-                        if (!this._keybinds[text].held && this.WasPressedLastFrame(text))
-                        {
-                            this._keybinds[text].action();
-                            this._pressedLastFrame[text] = true;
-                        }
-                    }
-                    else
-                    {
-                        this._pressedLastFrame[text] = false;
-                    }
-                }
-            }
-        }
-
-        public void BindSmall(Action a, bool held = true)
-        {
-            this._keybinds[this._file.GetString("KeybindSpawnSmall")] = new KeybindData(a, held);
-        }
-
-        public void BindMedium(Action a, bool held = true)
-        {
-            this._keybinds[this._file.GetString("KeybindSpawnMedium")] = new KeybindData(a, held);
-        }
-
-        public void BindLarge(Action a, bool held = true)
-        {
-            this._keybinds[this._file.GetString("KeybindSpawnLarge")] = new KeybindData(a, held);
-        }
-
-        private class KeybindData
-        {
-            public readonly Action action;
-            public readonly bool held;
-
-            public KeybindData(Action a, bool h)
-            {
-                this.action = a;
-                this.held = h;
-            }
-        }
-    }
 
     public class SpawnEnemies : CementMod
     {
         private int enemyCount = 0;
         private WavesData waveInformation;
-        private KeybindManager keybindManager;
         private bool inGame = false;
         private GameObject localPlayer;
 
@@ -128,36 +56,49 @@ namespace GangBeastsSpawnEnemies
             }
         }
 
+        private void SpawnSmall(Actor beast)
+        {
+            Vector3 position = this.GetPlayerPosition(beast) + Vector3.up;
+            this.SpawnEnemy(2, position);
+        }
+
+        private void SpawnMedium(Actor beast)
+        {
+            Vector3 position = this.GetPlayerPosition(beast) + Vector3.up;
+            this.SpawnEnemy(0, position);
+        }
+
+        private void SpawnLarge(Actor beast)
+        {
+            Vector3 position = this.GetPlayerPosition(beast) + Vector3.up;
+            this.SpawnEnemy(1, position);
+        }
+
         public void Start()
         {
-            this.keybindManager = new KeybindManager(this.modFile);
-            this.keybindManager.BindLarge(new Action(this.SpawnLarge), false);
-            this.keybindManager.BindMedium(new Action(this.SpawnMedium), false);
-            this.keybindManager.BindSmall(new Action(this.SpawnSmall), false);
             string text = "Waves/Grind";
-            this.waveInformation = Resources.Load<WavesData>(text);
+            // TODO: fix issue with wave information loading
+            this.waveInformation = Resources.LoadItem<WavesData>(text);
             SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(this.SceneLoaded);
+            BindKeys();
+        }
+
+        private void BindKeys()
+        {
+            InputManager.onInput(CementTools.Modules.InputModule.Input.i).bind(SpawnSmall);
+            InputManager.onInput(CementTools.Modules.InputModule.Input.dpadLeft).bind(SpawnSmall);
+
+            InputManager.onInput(CementTools.Modules.InputModule.Input.o).bind(SpawnMedium);
+            InputManager.onInput(CementTools.Modules.InputModule.Input.dpadDown).bind(SpawnMedium);
+
+            InputManager.onInput(CementTools.Modules.InputModule.Input.p).bind(SpawnLarge);
+            InputManager.onInput(CementTools.Modules.InputModule.Input.dpadRight).bind(SpawnLarge);
         }
 
         public void SceneLoaded(Scene scene, LoadSceneMode _)
         {
             this.inGame = scene.name != Global.MENU_SCENE_NAME;
         }
-
-        //private Vector3 GetMousePositionInWorld()
-        //{
-            //Vector3 vector = Mouse.current.position.ReadValue();
-            //vector.z = 2f;
-            //Ray ray = Camera.main.ScreenPointToRay(vector);
-            //if (Physics.Raycast(ray, out RaycastHit raycastHit))
-            //{
-            //    return raycastHit.point;
-            //}
-            //else
-            //{
-            //    return new Vector3(0f, -1000f, 0f);
-            //}
-        //}
 
         private Vector3 GetFirstPlayerPositionInWorld()
         {
@@ -173,22 +114,10 @@ namespace GangBeastsSpawnEnemies
             return new Vector3(0f, -1000f, 0f);
         }
 
-        private void SpawnSmall()
+        private Vector3 GetPlayerPosition(Actor beast)
         {
-            Vector3 position = this.GetFirstPlayerPositionInWorld() + Vector3.up;
-            this.SpawnEnemy(2, position);
-        }
-
-        private void SpawnMedium()
-        {
-            Vector3 position = this.GetFirstPlayerPositionInWorld() + Vector3.up;
-            this.SpawnEnemy(0, position);
-        }
-
-        private void SpawnLarge()
-        {
-            Vector3 position = this.GetFirstPlayerPositionInWorld() + Vector3.up;
-            this.SpawnEnemy(1, position);
+            GameObject localPlayer = beast.gameObject;
+            return localPlayer.transform.position;
         }
 
         public void Update()
@@ -203,11 +132,6 @@ namespace GangBeastsSpawnEnemies
                         actor.gangID = 1;
                     }
                 }
-            }
-
-            if (this.inGame)
-            {
-                this.keybindManager.CheckInputs();
             }
         }
     }
