@@ -1,18 +1,18 @@
 ﻿using System;
-using BepInEx;
+using System.Collections.Generic;
 using CementTools;
 using CoreNet.Model;
 using Costumes;
 using Femur;
 using GB.Core;
 using GB.Game.Data;
-using GB.Game.Data.Waves;
 using GB.Networking.Objects;
-using static LiftButton;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
+using Resources = GB.Core.Resources;
+using InputDevice = UnityEngine.Input;
 
 namespace GangBeastsSpawnEnemies
 {
@@ -104,10 +104,10 @@ namespace GangBeastsSpawnEnemies
             Wave wave = this.waveInformation.levelWaves[0];
             CostumeSaveEntry costumeByPresetName = MonoSingleton<Global>.Instance.Costumes.CostumePresetDatabase.GetCostumeByPresetName(this.waveInformation.GetRandomCostume());
             NetCostume netCostume = new NetCostume(costumeByPresetName);
-            Color color = new Color(Random.value, Random.value, Random.value);
+            Color color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
             int gangID = wave.beasts[0].gangID;
-            NetBeast netBeast = new NetBeast(200 + this.enemyCount, netCostume, color, color, gangID, 1, false);
-            GameObject gameObject = Object.Instantiate(this.waveInformation.GetSpawnObject(type), position, Quaternion.identity);
+            NetBeast netBeast = new NetBeast(200 + this.enemyCount, netCostume, color, color, gangID, (CoreNet.Objects.NetPlayer.PlayerType)1, false);
+            GameObject gameObject = UnityEngine.Object.Instantiate(this.waveInformation.GetSpawnObject(type), position, Quaternion.identity);
 
             if (gameObject != null)
             {
@@ -115,7 +115,7 @@ namespace GangBeastsSpawnEnemies
                 Actor component = gameObject.GetComponent<Actor>();
                 if (component != null)
                 {
-                    component.ControlledBy = 1;
+                    component.ControlledBy = (Actor.ControlledTypes)1;
                     component.playerID = -1;
                     component.IsAI = true;
                     component.controllerID = netBeast.ControllerId;
@@ -144,20 +144,20 @@ namespace GangBeastsSpawnEnemies
             this.inGame = scene.name != Global.MENU_SCENE_NAME;
         }
 
-        private Vector3 GetMousePositionInWorld()
-        {
-            Vector3 vector = Mouse.current.position.ReadValue();
-            vector.z = 2f;
-            Ray ray = Camera.main.ScreenPointToRay(vector);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit))
-            {
-                return raycastHit.point;
-            }
-            else
-            {
-                return new Vector3(0f, -1000f, 0f);
-            }
-        }
+        //private Vector3 GetMousePositionInWorld()
+        //{
+            //Vector3 vector = Mouse.current.position.ReadValue();
+            //vector.z = 2f;
+            //Ray ray = Camera.main.ScreenPointToRay(vector);
+            //if (Physics.Raycast(ray, out RaycastHit raycastHit))
+            //{
+            //    return raycastHit.point;
+            //}
+            //else
+            //{
+            //    return new Vector3(0f, -1000f, 0f);
+            //}
+        //}
 
         private Vector3 GetFirstPlayerPositionInWorld()
         {
